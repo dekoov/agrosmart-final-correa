@@ -52,24 +52,36 @@ Responde pensando en tus datos sembrados.
 
 **2.1** ¿Cuál es el nombre exacto de tu tabla y de dónde salió ese nombre?
 
->
+> El nombre que me toco ponerle a la tabla fue `tbl_productos_base_49` y este se le asigno en base a los dos ultimos digitos de mi numero de cedula
 
 **2.2** Pega la salida de `psql -d agrosmart_db -c "\d tbl_productos_base_NN"` y
 señala dónde se ve la restricción `unique` y el `length` de 120.
 
-```
+```sql
+agrosmart_db=# \dt
+                   List of tables
+ Schema |         Name          | Type  |   Owner
+--------+-----------------------+-------+-----------
+ categoria           | character varying(40)  |           |          |
+ correo_notificacion | character varying(500) |           |          |
+ nombre_producto     | character varying(120) |           | not null |       //Length de 120
+ precio_usd          | numeric(10,2)          |           |          |
+ stock_kg            | integer                |           | not null |
+Indexes:
+    "tbl_productos_base_49_pkey" PRIMARY KEY, btree (id_producto)
+    "ukmrqayey9imjuq3rrbumqg9xv7" UNIQUE CONSTRAINT, btree (nombre_producto) //Restriccion UNIQUE
 
 ```
 
 **2.3** ¿Por qué usaste `BigDecimal` y no `double` para `precio_usd`? Relaciónalo con el
 tipo que generó Hibernate en PostgreSQL.
 
->
+> Elegi BigDecimal por sobre double ya que este es un valor de tipo flotante, y tengo entendido que puede causar perdidas de precisión y errores de redondeo en operacioens financieras como sumas o divisiones. Con BigDecimal Hibernate genera de forma automatica el tipo de dato exacto de tipo `numeric(10,2)` lo que resuelve ese problema
 
 **2.4** ¿Cómo hiciste idempotente tu siembra y qué pasaría en el segundo arranque si no
 lo fuera? (piensa en la restricción `unique` de `nombre_producto`)
 
->
+> Esto lo logre envolviendo el codigo de insersión dentro de la condición `if (repository.count() == 0`, esto permite insertar datos solo si latabla esta vacia
 
 ---
 
