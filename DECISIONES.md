@@ -17,10 +17,10 @@
 
 ## Datos
 
-- **Nombre:**
-- **Cédula:**
-- **NN (dos últimos dígitos):**
-- **Categoría asignada (según el último dígito):**
+- **Nombre:** David Leandro Correa Beltrán
+- **Cédula:** 0944321249
+- **NN (dos últimos dígitos):** 49
+- **Categoría asignada (según el último dígito):** Quinua
 
 ---
 
@@ -28,23 +28,23 @@
 
 **1.1** ¿Qué archivo activa el perfil `prod` y qué línea exacta lo hace?
 
->
+> Este archivito `application.properties` activa el perfil cuando cree el otro archivo `application-prod.properties` y le asigne la misma nomenclatura que esta despues del guion, en la linea: `spring.profiles.active=prod`
 
 **1.2** Pega la línea del log de arranque donde se ve tu puerto y el perfil activo.
 
-```
-
+```bash
+2026-07-30T22:54:43.084-05:00  INFO 19776 --- [agrosmart] [           main] o.s.boot.reactor.netty.NettyWebServer    : Netty started on port 8149 (http)
 ```
 
 **1.3** ¿Qué habría pasado si dejabas `ddl-auto=create-drop` en lugar de `update`?
 Responde pensando en tus datos sembrados.
 
->
+> Si hubiera dejado el `ddl-auto` en create and drop, al detener mi aplicación Hibernate hubiera eliminado mi base de datos, ya que en el siguiente inicio la borraria y la volveria a crear y a insertar mis datos sembrados, que si bien es util cuando se hacen pruebas en las entidades, rompe el proposito de tener una base de datos persistente
 
 **1.4** ¿Levantaste PostgreSQL con `compose.yaml` (Opción A) o con una instalación local
 (Opción B)? ¿Qué ventaja tiene la que elegiste?
 
->
+> Levante mi base de datos con `compose.yaml` ya que ademas de no requerir ninguna instalación en mi maquina, esto hace que pueda "exportar" la configuración de mi base de datos e infraestructura para que cualquier persona pueda replicar mi entorno de pruebas rapidamente
 
 ---
 
