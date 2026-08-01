@@ -228,18 +228,31 @@ respuesta que produjo tu `onErrorResume`.
 
 **6.1** Pega la salida real de tus cuatro `curl`.
 
-```
+```bash
+PS C:\Users\dcobe\Code_\Java\PROGAV\agrosmart-final-correa> curl -s http://localhost:8149/api/productos
+[{"id":1,"nombre":"QUINUA BLANCA ORGANICA","categoria":"Quinua","precioUsd":3.50,"correosNotificacion":["exportaciones@agrosmart.com.ec"]},{"id":2,"nombre":"QUINUA ROJA DE ALTURA","categoria":"Quinua","precioUsd":4.20,"correosNotificacion":["exportaciones@agrosmart.com.ec"]},{"id":3,"nombre":"QUINUA NEGRA PREMIUM","categoria":"Quinua","precioUsd":5.00,"correosNotificacion":["premium@agrosmart.com.ec"]}]
 
+PS C:\Users\dcobe\Code_\Java\PROGAV\agrosmart-final-correa> curl -s http://localhost:8149/api/productos/1
+{"id":1,"nombre":"Quinua Blanca Organica","categoria":"Quinua","precioUsd":3.50,"correosNotificacion":["exportaciones@agrosmart.com.ec"]}
+
+PS C:\Users\dcobe\Code_\Java\PROGAV\agrosmart-final-correa> curl -i http://localhost:8149/api/productos/9999
+HTTP/1.1 404 Not Found
+Content-Type: application/json
+Content-Length: 152
+{"codigo":"PRODUCTO_NO_ENCONTRADO","mensaje":"El producto con ID 9999 no fue encontrado en el catálogo.","marcaDeTiempo":"2026-07-31T22:04:09.5807544"}
+
+PS C:\Users\dcobe\Code_\Java\PROGAV\agrosmart-final-correa> curl -s "http://localhost:8149/api/agrosmart/publicidad?producto=Quinua%20organica%20de%20altura&audiencia=tiendas%20de%20alimentacion%20saludable"
+"Eleva tu oferta: Quinua orgánica de altura, el superalimento que tus clientes adorarán."
 ```
 
 **6.2** ¿Cómo lograste que el id inexistente responda **404** y no 500?
 
->
+> Eso me fue posible ya que use el operador `switchIfEmpty` para emitir una excepcion personalizada, y capture esa excepción a nivel global con un `@RestControllerAdvice` el cual se encarga de interceptarlo y establecer el codigo HTTP
 
 **6.3** ¿Qué pasaría si tu controlador devolviera `List<Producto>` en lugar de
 `Flux<Producto>`? ¿Seguiría compilando? ¿Seguiría siendo no bloqueante?
 
->
+> Primero no compilaria por incompatibilidad de tipos, y definitivamente seria bloqueante, devolver un `List<Producto>` obliga a la aplicación a recolectar todos los elementos en memoria una sola vez antes de armar el HTTP, bloqueando el hilo actual
 
 ---
 
