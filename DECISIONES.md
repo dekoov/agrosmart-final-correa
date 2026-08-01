@@ -141,29 +141,46 @@ public static final Function<Producto, Producto> A_MAYUSCULAS = producto ->
 **4.1** Pega tu método `obtenerProductosComercializables()` completo.
 
 ```java
-
+public Flux<Producto> obtenerProductosComercializables() {
+        return Mono.fromCallable(repository::findAll)
+                .subscribeOn(Schedulers.boundedElastic())
+                .flatMapMany(Flux::fromIterable)
+                .map(ProductoMapper::toDominio)
+                .map(ProductoFilters.A_MAYUSCULAS)
+                .filter(ProductoFilters.IS_VALID)
+                .doOnNext(ProductoFilters.LOG_PRODUCTO)
+                .defaultIfEmpty(PRODUCTO_GENERICO);
+    }
 ```
 
 **4.2** ¿Qué pasa **exactamente** si eliminas
 `.subscribeOn(Schedulers.boundedElastic())` de ese método? Si lo probaste, indica qué
 hilo aparecía en el log antes y después.
 
->
+> Si esa linea se elimina, la consulta bloqueante de JPA se ejecuta directamente sobre el hilo main, bloqueando el servidor e impidiendo que procese solicitudes nuevas
+
+```java
+// Antes
+2026-07-31T21:18:31.048-05:00  INFO 22052 --- [agrosmart] [boundedElastic-1] reactor.Flux.DefaultIfEmpty.1            : onNext(com.dlcorrea.agrosmart.domain.Produc...
+
+// Despues
+2026-07-31T21:20:42.106-05:00  INFO 15196 --- [agrosmart] [           main] reactor.Flux.DefaultIfEmpty.1            : onNext(com.dlcorrea.agrosmart.domain.Produc...
+```
 
 **4.3** ¿Por qué `Mono.fromCallable(...)` y no `Mono.just(repository.findAll())`?
 (pista: cuándo se ejecuta cada uno)
 
->
+> Porque `Mono.just()` evalua su contenido de forma inmediata, lo que bloquearia el hilo principal antes de que exista un suscriptor
 
 **4.4** En **tu** código, ¿dónde usaste `defaultIfEmpty` y dónde `switchIfEmpty`, y por
 qué no son intercambiables en esos dos lugares?
 
->
+> Use `defaultIfEmpty` en la `obtenerProductosComercializables` para emitir un valor estatico de respaldo si el flujo se vacia al aplicar filtros, y `switchIfEmpty` en `buscarPorId` para desviar la ejecución hacia un nuevo publicador que lance mi excepción cuando la BD no encuentre el ID
 
 **4.5** ¿Por qué `doOnNext` no sirve para transformar el elemento, si aparentemente
 "recibe" el producto?
 
->
+> Porque fue diseñado para ejecutar efectos secundarios, como imprimir logs, enviar metricas, etc. Ya que los flujos reactivos son inmutables `doOnNext` no tiene capacidad de insertar un objeto modificado al pipeline
 
 ---
 
