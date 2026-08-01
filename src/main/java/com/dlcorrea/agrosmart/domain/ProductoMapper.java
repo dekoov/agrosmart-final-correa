@@ -16,7 +16,7 @@ public class ProductoMapper {
             return null;
         }
 
-        String correosString = entity.getCorreNotificacion();
+        String correosString = entity.getCorreoNotificacion();
 
         List<String> correosList;
         if (correosString != null && !correosString.trim().isEmpty()) {

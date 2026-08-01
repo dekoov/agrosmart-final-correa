@@ -34,7 +34,7 @@ public class ProductoEntity {
     private String categoria;
 
     @Column(name = "correo_notificacion", length = 500)
-    private String correNotificacion;
+    private String correoNotificacion;
 
     public ProductoEntity() {
     }
@@ -79,12 +79,12 @@ public class ProductoEntity {
         this.categoria = categoria;
     }
 
-    public String getCorreNotificacion() {
-        return correNotificacion;
+    public String getCorreoNotificacion() {
+        return correoNotificacion;
     }
 
-    public void setCorreNotificacion(String correNotificacion) {
-        this.correNotificacion = correNotificacion;
+    public void setCorreoNotificacion(String correoNotificacion) {
+        this.correoNotificacion = correoNotificacion;
     }
 
 }
