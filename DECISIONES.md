@@ -90,24 +90,48 @@ lo fuera? (piensa en la restricción `unique` de `nombre_producto`)
 **3.1** ¿Por qué tienes **dos** clases (`ProductoEntity` y `Producto`) en lugar de una?
 ¿Qué te impide hacer inmutable directamente la entidad de Hibernate?
 
->
+> Realice dos clases para separar la capa de persistencia del ORM de la capa de dominio, una esta acoplada a Hibernate y mapea directamente en la BD, la otra esta libre de anotaciones e infraestructura, pura logica de negocio
 
 **3.2** Escribe el código exacto de **tus dos** copias defensivas e indica en qué línea
 está cada una.
 
 ```java
+public Producto(Long id, String nombre, String categoria, BigDecimal precioUsd, List<String> correosNotificacion) {
+    this.id = id;
+    this.nombre = nombre;
+    this.categoria = categoria;
+    this.precioUsd = precioUsd;
+    // LÍNEA DE COPIA DEFENSIVA DE ENTRADA:
+    this.correosNotificacion = (correosNotificacion != null) 
+            ? new ArrayList<>(correosNotificacion) 
+            : new ArrayList<>();
+}
 
+public List<String> getCorreosNotificacion() {
+    // LÍNEA DE COPIA DEFENSIVA DE SALIDA:
+    return Collections.unmodifiableList(new ArrayList<>(correosNotificacion));
+}
 ```
 
 **3.3** ¿Por qué la copia defensiva **solo en el getter** no sería suficiente? Describe
 el ataque concreto que quedaría abierto sobre **tu** clase.
 
->
+> Si solo pongo la copia defensiva en el getter, el constructor mantendría la referencia a la lista original pasada desde afuera `(this.correosNotificacion = correosNotificacion;)`.
+> Ataque concreto: Alguien podría crear un Producto usando una lista local (misCorreos), guardar esa referencia en una variable externa y luego alterarla directamente (`misCorreos.clear()` o `misCorreos.add("hacker@malicioso.com")`).
 
 **3.4** ¿Cómo implementaste `A_MAYUSCULAS` para no mutar el `Producto` recibido?
 
-```java
+> Trate que en lugar de intentar modificar el campo nombre de la instancia recibida, la funcion evalua el nombre actual, aplica mayusculas y retorna un objeto producto nuevo
 
+```java
+public static final Function<Producto, Producto> A_MAYUSCULAS = producto -> 
+        new Producto(
+            producto.getId(),
+            producto.getNombre() != null ? producto.getNombre().toUpperCase() : null,
+            producto.getCategoria(),
+            producto.getPrecioUsd(),
+            producto.getCorreosNotificacion()
+        );
 ```
 
 ---
