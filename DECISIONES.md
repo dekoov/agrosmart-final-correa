@@ -261,28 +261,60 @@ PS C:\Users\dcobe\Code_\Java\PROGAV\agrosmart-final-correa> curl -s "http://loca
 **7.1** Pega la salida real de tus pruebas (`./mvnw test` o `./gradlew test`).
 
 ```
+ [INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.dlcorrea.agrosmart.domain.ProductoFiltersTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.108 s -- in com.dlcorrea.agrosmart.domain.ProductoFiltersTest
+[INFO] Running com.dlcorrea.agrosmart.domain.ProductoTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.014 s -- in com.dlcorrea.agrosmart.domain.ProductoTest
+[INFO] Running com.dlcorrea.agrosmart.service.ProductoServiceTest
+Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your bu
+ild as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+WARNING: A Java agent has been loaded dynamically (C:\Users\dcobe\.m2\repository\net\bytebuddy\byte-buddy-agent\1.18.10\byte-buddy-agent-1.18.10.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+Java HotSpot(TM) 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+Procesando Producto [ID: 1, Nombre: P1]
+Procesando Producto [ID: 2, Nombre: P2]
+Procesando Producto [ID: 3, Nombre: P3]
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.723 s -- in com.dlcorrea.agrosmart.service.ProductoServiceTest
+[INFO] Running com.dlcorrea.agrosmart.service.PublicidadServiceTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.128 s -- in com.dlcorrea.agrosmart.service.PublicidadServiceTest
+[INFO] 
+[INFO] Results:
+[INFO]
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0
+[INFO]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  6.659 s
+[INFO] Finished at: 2026-07-31T22:47:08-05:00
+[INFO] ------------------------------------------------------------------------
 
 ```
 
 **7.2** ¿Cuántos productos espera tu `expectNextCount(...)` y por qué ese número
 concreto? Relaciónalo con tu semilla.
 
->
+> Espera exactamente 3. Esto se debe a que, en la fase "Arrange" de la prueba, simulamos el comportamiento del repositorio para que devuelva una lista inicial de 5 productos: 3 con datos correctos y 2 inválidos (uno con precio cero y otro sin correo)
 
 **7.3** ¿Por qué mockeaste `ProductoRepository` en lugar de dejar que la prueba consulte
 PostgreSQL?
 
->
+> Porque el objetivo de una prueba unitaria es aislar la lógica de negocio (en este caso, ProductoService) de cualquier dependencia externa. Si usara PostgreSQL, la prueba se convertiría en una prueba de integración, haciéndola dependiente de que el motor de base de datos esté encendido
 
 **7.4** ¿Qué demuestra `assertNotSame` que `assertEquals` **no** demuestra en tu prueba
 de copia defensiva?
 
->
+> únicamente verifica que el contenido de las dos listas sea idéntico, pero assertNotSame verifica la identidad de memoria (osea que no sean el mismo objeto). Esto demuestra de forma irrefutable que la lista devuelta por el getter es una instancia completamente nueva en la memoria
 
 **7.5** ¿Por qué una prueba de un `Flux` que no llama a `verifyComplete()` (o a
 `verify()`) no está probando nada?
 
->
+> Un Flux o Mono no hace nada de nada hasta que alguien se suscribe a él. En el entorno de pruebas, verify() y verifyComplete() actúan como la llamada de suscripción y gatillan la evaluación. Sin ellos, el flujo nunca se ejecuta
 
 ---
 
@@ -290,21 +322,30 @@ de copia defensiva?
 
 **8.1** Pega tu `git log --oneline --graph --all`.
 
-```
-
+```bash
+PS C:\Users\dcobe\Code_\Java\PROGAV\agrosmart-final-correa> git log --oneline --graph --all
+* 4d1d4b7 (HEAD -> feature/pruebas, origin/feature/pruebas) test: agrega pruebas del modelo, logica funcional, flujo reactivo e ia
+* fe004bf (origin/feature/api-reactiva, feature/api-reactiva) feat: expone endpoints reactivos y de publicidad
+* 51b3e6c (origin/feature/ia-langchain4j, feature/ia-langchain4j) feat: integra langchain4j para publicidad de productos
+* c4d32a5 (origin/feature/servicio-reactivo, feature/servicio-reactivo) feat: implementa servicio reactivo con boundedElastic y operadores + bonus manejo errores     
+* 37a12e7 (origin/feature/modelo-inmutable, feature/modelo-inmutable) feat: agrega modelo inmutable de producto y logica funcional
+* 51f7ff7 (origin/feature/persistencia-jpa, feature/persistencia-jpa) feat: agrega entidad jpa de productos y siembra de datos
+* 1983405 (origin/feature/config-perfiles, feature/config-perfiles) chore: configura perfil prod con postgresql y puerto propio
+* 58a6aff (origin/main, origin/HEAD, main) chore: inicializa proyecto agrosmart y registra identidad del examen
+* fc62fdf Initial commit
 ```
 
 **8.2** ¿Qué fase te tomó más tiempo del previsto y por qué?
 
->
+> La fase 4 definitivamente me demore en implementar ya que ademas de que no terminaba muy bien de comprender bien los hilos y el bloqueo, tambien tuve un error con git y las ramas y casi hago un push en una rama que no era, entonces entre en panico y demore mas por eso
 
 **8.3** Si tuvieras 30 minutos más, ¿qué mejorarías **primero** de tu entrega y por qué
 esa y no otra?
 
->
+> Si tuviera 30 minutos más mejoraria el manejo de errores en la aplicación siento que no la probe lo suficiente, adicional tambien me gustaria hacer mas pruebas a la base de datos para el manejo de excepciones
 
 **8.4** Declara honestamente qué herramientas consultaste durante el examen
 (documentación, apuntes, asistentes de IA) y para qué. **Esta declaración no descuenta
 puntaje**; su omisión o falsedad sí constituye falta de honestidad académica.
 
->
+> Para resolver el error con git y para guiarme durante este proyecto con los commits y las branch use Gemini en la web
