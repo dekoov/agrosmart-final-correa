@@ -189,23 +189,31 @@ qué no son intercambiables en esos dos lugares?
 **5.1** Pega tu interfaz `AgroSmartAIService` completa.
 
 ```java
+                               AiService
+public interface AgroSmartAIService {
 
+    @UserMessage("""
+            Redacta una frase publicitaria de máximo 100 caracteres para vender \
+            {{producto}} dirigido a {{audiencia}}.""")
+    String generarPublicidad(@V("producto") String producto,
+                             @V("audiencia") String audiencia);
+}
 ```
 
 **5.2** ¿Qué hace `@V("producto")` y qué pasaría si lo quitaras dejando solo el
 parámetro?
 
->
+> Esta direcciona el parametro del método Java con la variable {{producto}} definida dentro del prompt. Si se omite la IA perderia el vinculo
 
 **5.3** ¿En qué archivo y con qué líneas configuraste el modelo? ¿Por qué **no** hizo
 falta declarar un `@Bean`?
 
->
+> lo configure en `application-prod.properties` y no fue necesario el Bean porque utilice el Starter de Spring Boot de LangChain4j, este implementa la autoconfiguración, escanea el properties e inyecta el bean al modelo
 
 **5.4** ¿Por qué la llamada a la IA también necesita `boundedElastic`, si no es una
 consulta a base de datos?
 
->
+> Porque la interfaz de LangChain4j realiza peticiones HTTP SINCRONAS hacia la API de OpenAI, aunque no es una BD cualqueir operacion de red que ponga el hilo en espera causara el mismo problema
 
 **5.5** Si tu proveedor devolvió un error durante el examen, pega el mensaje real y la
 respuesta que produjo tu `onErrorResume`.
